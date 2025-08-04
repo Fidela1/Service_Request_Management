@@ -1,0 +1,29 @@
+{
+  "name": "service_request_management",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+     "start": "node appjs",
+  "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fidela1/Service_Request_Management.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fidela1/Service_Request_Management/issues"
+  },
+  "homepage": "https://github.com/Fidela1/Service_Request_Management#readme",
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
