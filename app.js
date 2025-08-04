@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('./db');
 const {createUsersTable} = require('./src/models/userModel');
+const {createRequestsTable} = require('./src/models/requestModel');
 const routes = require('./src/routes/server.route');
 require('dotenv').config();
 
@@ -16,15 +17,12 @@ app.listen(PORT, async () => {
   try {
     // Test DB connection on server start
     await createUsersTable();
-    console.log('✅ User table created or already exists');
+    await createRequestsTable();
     const result = await pool.query('SELECT NOW()');
     console.log('✅ Database connected successfully at:', result.rows[0].now);
     
   } catch (err) {
     console.error('❌ Database connection failed:', err.message);
   }
-
-
-
 
 });
