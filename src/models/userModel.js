@@ -13,14 +13,6 @@ async function createUsersTable() {
       password VARCHAR(255) NOT NULL
     );
   `;
-
-  try {
-    await pool.query(query);
-    console.log('✅ Users table created successfully');
-  } catch (error) {
-    console.error('❌ Error creating users table:', error.message);
-    throw error;
-  }
 }
 
 module.exports = {
