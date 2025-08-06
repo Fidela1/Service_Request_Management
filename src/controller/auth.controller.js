@@ -23,7 +23,7 @@ const createUsers = async (req, res) => {
         
         res.status(201).json({
             message: 'User created successfully',
-            data: request
+            data: result.rows[0]
         })
     }
     catch(error){
@@ -40,7 +40,7 @@ const createUsers = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // 1. Check if user exists
+
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
@@ -48,7 +48,7 @@ const createUsers = async (req, res) => {
 
     const user = result.rows[0];
 
-    // 2. Compare password
+   
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid credentials' });
@@ -76,8 +76,47 @@ const createUsers = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+ const getAllUsers = async (req,res) => {
 
+  try{
+    const result = await pool.query('SELECT * FROM users');
+
+      if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+    res.status(201).json({
+      message: "User retrieved successfully",
+      requests: result.rows
+    });
+  }
+  catch(error){
+    console.error("Failed to retrieve users", error.message);
+    res.status(500).json({error: 'Internal server error'});
+  }
+ }
+
+ const deleteUserById = async (req, res) =>{
+  const user_id = req.params.id;
+
+  try{
+    const result = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [user_id]);
+
+    if(result.rows.length === 0){
+      return res.status(404).json({ error: 'User not found' });
+    } 
+    res.status(200).json({
+      message: "User deleted successfully",
+
+    });
+  }
+  catch(error){
+    console.error("Failed to delete user", error.message);
+    res.status(500).json({erro: "Internal server error"});
+    }
+ }
 module.exports = {
     createUsers,
-    loginUser
+    loginUser,
+    getAllUsers,
+    deleteUserById
 };
