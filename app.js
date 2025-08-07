@@ -4,8 +4,10 @@ const {createUsersTable} = require('./src/models/userModel');
 const {createRequestsTable} = require('./src/models/requestModel');
 const routes = require('./src/routes/server.route');
 require('dotenv').config();
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use('/api/v1', routes);
 
