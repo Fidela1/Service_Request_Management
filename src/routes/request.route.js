@@ -2,6 +2,7 @@ const express = require('express');
 const {createRequest, 
     getAllRequests,
     getRequestById,
+    getRequestByUserId,
     updateRequestById,
     deleteRequestById,
     updateRequestStatus} = require('../controller/request.controller');
@@ -13,6 +14,7 @@ const router = express.Router();
 router.post('/create', protect,createRequest);
 router.get('/allRequests', protect,isAdmin, getAllRequests);
 router.get('/getRequest/:id', protect, getRequestById);
+router.get('/myRequests', protect, getRequestByUserId);
 router.put('/updateRequest/:id', protect, updateRequestById);
 router.put('/updateRequestStatus/:id', protect, isAdmin,updateRequestStatus);
 router.delete('/deleteRequest/:id', protect,deleteRequestById);

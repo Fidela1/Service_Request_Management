@@ -23,7 +23,7 @@ const createRequest = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Error creating request:', error.message);
+    console.error(' Error creating request:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 };
@@ -36,53 +36,110 @@ const getAllRequests = async (req, res) => {
       requests: result.rows,
     });
   } catch (error) {
-    console.error('❌ Error retrieving requests:', error.message);
+    console.error(' Error retrieving requests:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 };
 
 const getRequestById = async (req, res) => {
-    const requestId = req.params.id;
+  const requestId = req.params.id;
+  const userId = req.user.id;
+  const userRole = req.user.role; 
+
+  try {
+    let query, values;
+
+    if (userRole === "admin") {
+ 
+      query = "SELECT * FROM requests WHERE id = $1";
+      values = [requestId];
+    } else {
+
+      query = "SELECT * FROM requests WHERE id = $1 AND user_id = $2";
+      values = [requestId, userId];
+    }
+
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Request not found or not authorized" });
+    }
+
+    res.status(200).json({
+      message: "Request retrieved successfully",
+      request: result.rows[0],
+    });
+  } catch (error) {
+    console.error(" Error retrieving request:", error.message);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+const getRequestByUserId = async (req, res) => {
+
     const userId = req.user.id;
     
     try {
-        const result = await pool.query('SELECT * FROM requests WHERE id = $1 AND user_id = $2', [requestId,userId]);
-    
-        if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'Request not found or not yours' });
-        }
+        const result = await pool.query('SELECT * FROM requests WHERE user_id = $1 ORDER BY id DESC', [userId]);
     
         res.status(200).json({
         message: 'Request retrieved successfully',
-        request: result.rows[0],
+        requests: result.rows,
         });
     } catch (error) {
-        console.error('❌ Error retrieving request:', error.message);
+        console.error(' Error retrieving request:', error.message);
         res.status(500).json({ error: 'Server error' });
     }
     }
 
-    const updateRequestById  = async (req, res) =>{
-        const requestId = req.params.id;
-        const userId = req.user.id;
+   const updateRequestById = async (req, res) => {
+  const requestId = req.params.id;
+  const userId = req.user.id;
+  const userRole = req.user.role; 
 
-        const {title, description} = req.body;
-        try{
-        const result = await pool.query('UPDATE requests SET title = $1, description = $2 WHERE id = $3 AND user_id = $4 RETURNING *', 
-            [title, description, requestId,userId]);
-        if (result.rows.length === 0) {
-            return res.status(404).json({ error: 'Request not found or not yours' });
+  const { title, description } = req.body;
 
-        }
-        res.status(200).json({
-            message: 'Request updated successfully',
-            request: result.rows[0],
-        });
-        }catch(error) {
-            console.error('❌ Error updating request:', error.message);
-            res.status(500).json({ error: 'Server error' });
-        }
+  try {
+    let query, values;
+
+    if (userRole === "admin") {
+
+      query = `
+        UPDATE requests 
+        SET title = $1, description = $2 
+        WHERE id = $3
+        RETURNING *
+      `;
+      values = [title, description, requestId];
+    } else {
+      query = `
+        UPDATE requests 
+        SET title = $1, description = $2 
+        WHERE id = $3 AND user_id = $4
+        RETURNING *
+      `;
+      values = [title, description, requestId, userId];
     }
+
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "Request not found or not authorized to update" });
+    }
+
+    res.status(200).json({
+      message: "Request updated successfully",
+      request: result.rows[0],
+    });
+  } catch (error) {
+    console.error(" Error updating request:", error.message);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
     const updateRequestStatus = async (req, res) => {
   const requestId = req.params.id;
   const { status } = req.body;
@@ -107,7 +164,7 @@ const getRequestById = async (req, res) => {
       request: result.rows[0],
     });
   } catch (error) {
-    console.error('❌ Error updating status:', error.message);
+    console.error(' Error updating status:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 }
@@ -138,7 +195,7 @@ const deleteRequestById = async (req, res) => {
 
     res.status(200).json({ message: 'Request deleted successfully' });
   } catch (error) {
-    console.error('❌ Error deleting request:', error.message);
+    console.error(' Error deleting request:', error.message);
     res.status(500).json({ error: 'Server error' });
   }
 };
@@ -149,6 +206,7 @@ module.exports = {
   createRequest,
     getAllRequests,
     getRequestById,
+    getRequestByUserId,
     updateRequestById,
     deleteRequestById,
     updateRequestStatus
