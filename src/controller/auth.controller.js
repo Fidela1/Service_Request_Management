@@ -30,7 +30,7 @@ const createUsers = async (req, res) => {
         if (error.code === '23505') {
       res.status(409).json({ error: 'Email or telephone already exists' });
     } else {
-      console.error('❌ Error creating user:', error.message);
+      console.error(' Error creating user:', error.message);
       res.status(500).json({ error: 'Server error' });
     }
     }
