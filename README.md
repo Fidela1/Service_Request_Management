@@ -7,4 +7,4 @@ It has following functionalities:
 
 a. Signup
 b. Login
-c. Requst CRUD
+c. Request CRUD
