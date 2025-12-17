@@ -9,7 +9,9 @@ const cors = require('cors');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "*"
+}));
 app.use(express.json());
 
 // API routes
@@ -19,7 +21,7 @@ app.use('/api/v1', routes);
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, async () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(` Server running at http://localhost:${PORT}`);
 
   try {
     await createUsersTable();
