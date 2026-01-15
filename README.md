@@ -1,6 +1,6 @@
 ### Service Request Management Backend
 This will help technician to communicate with clients
-It has following functionalities:
+It has following functionalities for users:
 
 
 
@@ -8,3 +8,7 @@ It has following functionalities:
 a. Signup
 b. Login
 c. Request CRUD
+
+### Admin can:
+    a. Login
+    b. update request status
